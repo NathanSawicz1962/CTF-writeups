@@ -1,0 +1,5 @@
+To solve the "Log Hunt" challenge, I logged into the picoCTF WebShell and used the wget command to download the server.log file directly into my terminal. Since the challenge description mentioned that the flag was scattered in fragments throughout the logs, I knew I couldn't just read the file manually. I ran grep "picoCTF{" server.log to find the start of the flag, but it only gave me the first piece, picoCTF{us3_. To find the rest, I realized the fragments were tagged with "FLAGPART," so I executed grep "FLAGPART" server.log | sort | uniq to filter out the thousands of "low disk space" distractor messages and reveal only the unique parts of the secret.
+
+By analyzing the output, I successfully identified all four pieces: picoCTF{us3_, y0urlinux_, sk1lls_, and cedfa5fb}. I then reconstructed the fragments into the final continuous string, picoCTF{us3_y0urlinux_sk1lls_cedfa5fb}. After combining them, I pasted the complete flag into the submission box on the picoCTF website to earn my points and complete the challenge.
+
+blob:https://gemini.google.com/f1a5dc43-d1dd-44be-bb71-d0ebabdfc962 
