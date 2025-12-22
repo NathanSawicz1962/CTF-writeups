@@ -1,0 +1,6 @@
+This file contains the challenge in PicoCTF called Hidden in plain sight. The Hidden in Plain Sight challenge is a classic forensics exercise that tests a researcher's ability to uncover data concealed within seemingly ordinary files. My investigation began with an analysis of the provided file's metadata using ExifTool, as flags or passwords are often tucked away in fields like the "License" or "Comment" sections. In this case, I discovered a Base64-encoded string that appeared out of place. After decoding the string, I obtained a passphrase which served as the key to the next layer of the challenge: extracting a hidden payload from the image itself.
+
+To finalize the extraction, I utilized Steghide, a powerful steganography tool designed to hide data within JPEG and BMP files. By applying the previously discovered passphrase, I was able to extract a hidden text file containing the flag. This challenge highlights the importance of thorough metadata inspection and the effectiveness of multi-layered steganography in digital forensics. It serves as a reminder that in cybersecurity, the most critical information is often obscured by the most common details.
+
+
+
