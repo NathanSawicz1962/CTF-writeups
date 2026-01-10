@@ -1,0 +1,37 @@
+corrupt file ctf
+Inbox
+
+Nathan Sawicz (Service Desk)
+Jan 4, 2026, 4:35 PM (6 days ago)
+to me
+
+picoCTF Write-up: File Repair Challenge
+Author: Natedog309
+Challenge Name: [Insert Challenge Name]
+Category: Forensics
+📝 Description
+The challenge provides a "broken" file and hints that a few missing or incorrect bytes are preventing it from being accessed. The goal is to repair the file header and extract the hidden flag.
+🔍 Investigation
+1. Initial Analysis
+I started by inspecting the file using the hexdump command to look at the "Magic Bytes" (the file signature).
+Bash
+hexdump -C file | head -n 5
+Output: 00000000 5c 78 ff e0 00 10 4a 46 49 46 00 01 01 00 00 01 |\x....JFIF......|
+The presence of the string JFIF confirmed that this was intended to be a JPEG image. However, the standard JPEG header must start with ff d8 ff e0. My file started with 5c 78 ff e0, meaning the first two bytes were corrupted.
+🛠️ Solution
+1. Repairing the Header
+To fix the file, I needed to overwrite the first two bytes (5c 78) with the correct JPEG Start of Image (SOI) marker (ff d8). I used the printf and dd commands to perform an in-place binary edit:
+Bash
+printf '\xff\xd8' | dd conv=notrunc of=file bs=1 count=2
+2. Verifying the Fix
+I ran hexdump again to ensure the header was corrected:
+Bash
+hexdump -C file | head -n 1
+# New Output: ff d8 ff e0 00 10 4a 46 49 46... (Correct!)
+3. Extracting the Flag
+Since the environment was a CLI-only webshell, I couldn't open the image directly. I converted the binary file to a Base64 string to export the data:
+Bash
+base64 file
+I copied the resulting Base64 string and used an online Base64-to-Image converter. The rendered image revealed the flag written across the center.
+🚩 Flag
+picoCTF{r3stl0r1ng_th3_by73s_31cc795d}
